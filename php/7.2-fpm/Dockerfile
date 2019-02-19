@@ -67,6 +67,9 @@ RUN chown -R app:app /usr/local/etc/php/conf.d /sock
 RUN mkdir -p /var/www && chown -R app:app /var/www/
 RUN echo "app ALL=(ALL) NOPASSWD: /bin/chown" >> /etc/sudoers.d/app
 
+USER app
+RUN composer global require hirak/prestissimo
+
 USER app:app
 
 VOLUME /var/www
