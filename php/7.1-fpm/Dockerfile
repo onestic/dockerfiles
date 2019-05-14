@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
   libxslt1-dev \
   lsof \
   mysql-client \
+  libmagickwand-dev --no-install-recommends \
   vim \
   pv \
   zip \
@@ -22,6 +23,10 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-configure \
   gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+
+RUN pecl channel-update pecl.php.net \ 
+  && pecl install imagick \ 
+  && docker-php-ext-enable imagick 
 
 RUN docker-php-ext-install \
   bcmath \
