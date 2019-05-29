@@ -18,6 +18,8 @@ RUN apt-get update && apt-get install -y \
   pv \
   zip \
   procps \
+  rsync \
+  openssh-server \
   sudo \
   && rm -rf /var/lib/apt/lists/*
 
@@ -66,6 +68,18 @@ COPY conf/php-fpm.conf /usr/local/etc/
 RUN mkdir /sock
 RUN chown -R app:app /usr/local/etc/php/conf.d /sock
 
+# SSH setup
+RUN mkdir /var/run/sshd
+RUN echo 'root:docker' | chpasswd
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+RUN echo "app ALL=(ALL) NOPASSWD: /usr/sbin/service ssh start" >> /etc/sudoers.d/app
+
 RUN mkdir -p /var/www && chown -R app:app /var/www/
 RUN echo "app ALL=(ALL) NOPASSWD: /bin/chown" >> /etc/sudoers.d/app
 
@@ -78,7 +92,7 @@ VOLUME /var/www
 
 WORKDIR /var/www/html
 
-EXPOSE 9001
+EXPOSE 9001 22
 
 COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
