@@ -47,6 +47,9 @@ RUN pecl channel-update pecl.php.net \
   && docker-php-ext-enable xdebug \
   && sed -i -e 's/^zend_extension/\;zend_extension/g' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
+# Clean up apt-get update
+RUN rm -rf /var/lib/apt/lists/*
+
 RUN curl -sS https://getcomposer.org/installer | \
   php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -82,9 +85,6 @@ RUN echo "app ALL=(ALL) NOPASSWD: /usr/sbin/service ssh start" >> /etc/sudoers.d
 
 RUN mkdir -p /var/www && chown -R app:app /var/www/
 RUN echo "app ALL=(ALL) NOPASSWD: /bin/chown" >> /etc/sudoers.d/app
-
-USER app
-RUN composer global require hirak/prestissimo
 
 USER app:app
 
