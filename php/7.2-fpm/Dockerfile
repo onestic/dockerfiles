@@ -13,13 +13,21 @@ RUN apt-get update && apt-get install -y \
   libxslt1-dev \
   lsof \
   mysql-client \
+  libmagickwand-dev --no-install-recommends \
   vim \
+  pv \
   zip \
   procps \
+  rsync \
+  openssh-server \
   sudo
 
 RUN docker-php-ext-configure \
   gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+
+RUN pecl channel-update pecl.php.net \
+  && pecl install imagick \
+  && docker-php-ext-enable imagick
 
 RUN docker-php-ext-install \
   bcmath \
@@ -36,10 +44,6 @@ RUN pecl channel-update pecl.php.net \
   && pecl install xdebug \
   && docker-php-ext-enable xdebug \
   && sed -i -e 's/^zend_extension/\;zend_extension/g' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
-RUN apt-get install -y libssh2-1-dev \
-  && pecl install ssh2-1.1.2 \
-  && docker-php-ext-enable ssh2
 
 # Clean up apt-get update
 RUN rm -rf /var/lib/apt/lists/*
@@ -64,11 +68,20 @@ COPY conf/php-fpm.conf /usr/local/etc/
 RUN mkdir /sock
 RUN chown -R app:app /usr/local/etc/php/conf.d /sock
 
+# SSH setup
+RUN mkdir /var/run/sshd
+RUN echo 'root:docker' | chpasswd
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+RUN echo "app ALL=(ALL) NOPASSWD: /usr/sbin/service ssh start" >> /etc/sudoers.d/app
+
 RUN mkdir -p /var/www && chown -R app:app /var/www/
 RUN echo "app ALL=(ALL) NOPASSWD: /bin/chown" >> /etc/sudoers.d/app
-
-USER app
-RUN composer global require hirak/prestissimo
 
 USER app:app
 
@@ -76,7 +89,7 @@ VOLUME /var/www
 
 WORKDIR /var/www/html
 
-EXPOSE 9001
+EXPOSE 9001 22
 
 COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
