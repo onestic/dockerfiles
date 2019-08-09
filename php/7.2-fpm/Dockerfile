@@ -1,5 +1,5 @@
 FROM php:7.2-fpm
-MAINTAINER Juan Alonso <juan.jalogut@gmail.com>
+MAINTAINER Fabio Righi <fabio@onestic.com>
 
 RUN apt-get update && apt-get install -y \
   cron \
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
   libpng-dev \
   libxslt1-dev \
   lsof \
-  mysql-client \
+  default-mysql-client \
   libmagickwand-dev --no-install-recommends \
   vim \
   pv \
