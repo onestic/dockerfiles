@@ -1,3 +1,5 @@
+ARG UID=1000
+ARG GID=1000
 FROM php:7.1-fpm
 MAINTAINER Fabio Righi <fabio@onestic.com>
 
@@ -60,8 +62,8 @@ RUN curl -sS -O https://files.magerun.net/n98-magerun2-latest.phar \
   && chmod +x ./n98-magerun2-latest.phar \
   && mv ./n98-magerun2-latest.phar /usr/local/bin/n98-magerun2
 
-RUN groupadd -g 1000 app \
-  && useradd -g 1000 -u 1000 -d /var/www -s /bin/bash app
+RUN groupadd -g $GID app \
+  && useradd -g $GID -u $UID -d /var/www -s /bin/bash app
 
 COPY conf/www.conf /usr/local/etc/php-fpm.d/
 COPY conf/php.ini /usr/local/etc/php/
