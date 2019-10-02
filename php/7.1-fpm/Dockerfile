@@ -1,7 +1,8 @@
-ARG UID=1000
-ARG GID=1000
 FROM php:7.1-fpm
 MAINTAINER Fabio Righi <fabio@onestic.com>
+
+ARG UID=1000
+ARG GID=1000
 
 RUN apt-get update && apt-get install -y \
   cron \

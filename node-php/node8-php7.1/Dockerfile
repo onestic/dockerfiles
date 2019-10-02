@@ -1,6 +1,7 @@
+FROM node:8
+
 ARG UID=1000
 ARG GID=1000
-FROM node:8
 
 RUN apt-get update -y
 RUN npm install -g grunt-cli && npm install -g bower

@@ -1,7 +1,8 @@
-ARG UID=1000
-ARG GID=1000
 FROM nginx:1.13
 MAINTAINER Juan Alonso <juan.jalogut@gmail.com>
+
+ARG UID=1000
+ARG GID=1000
 
 RUN apt-get update \
 	&& apt-get install -y sudo \
