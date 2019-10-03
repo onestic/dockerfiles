@@ -1,12 +1,15 @@
 FROM nginx:1.13
 MAINTAINER Juan Alonso <juan.jalogut@gmail.com>
 
+ARG UID=1000
+ARG GID=1000
+
 RUN apt-get update \
 	&& apt-get install -y sudo \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -g 1000 app \
- && useradd -g 1000 -u 1000 -d /var/www -s /bin/bash app
+RUN groupadd -g $GID app \
+ && useradd -g $GID -u $UID -d /var/www -s /bin/bash app
 RUN touch /var/run/nginx.pid
 RUN mkdir /sock
 RUN chown -R app:app /var/cache/nginx/ /var/run/nginx.pid /sock

@@ -1,5 +1,8 @@
 FROM node:8
 
+ARG UID=1000
+ARG GID=1000
+
 RUN apt-get update -y
 RUN npm install -g grunt-cli && npm install -g bower
 
@@ -22,6 +25,9 @@ RUN apt-get update && \
         php7.1-zip \
         php7.1-pdo-mysql \
     && apt-get clean
+
+RUN usermod -u $UID app \
+    && groupmod -g $GID app
 
 RUN mkdir -p /home/app \
     && usermod -d /home/app -l app node \
