@@ -26,7 +26,8 @@ ENV UNISON_USER="app" \
     SYNC_SILENT="0" \
     SYNC_MAX_INOTIFY_WATCHES='' \
     SYNC_EXTRA_UNISON_PROFILE_OPTS='' \
-    SYNC_NODELETE_SOURCE="0"
+    SYNC_NODELETE_SOURCE="0" \
+    UNISONLOCALHOSTNAME="container"
 
 COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
